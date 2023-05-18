@@ -23,16 +23,16 @@ member functions and variables, ensuring proper encapsulation and separation of 
 class Nova {
 public:
     Nova(int initial_brightness, int initial_size, int initial_power, int num_lumens);
+
     ~Nova();
     Nova(const Nova& other);
     Nova(Nova&& other) noexcept;
-
     Nova& operator=(const Nova& other);
     Nova& operator=(Nova&& other) noexcept;
 
     void glow(int x);
-    int min_glow() const;
-    int max_glow() const;
+    int minGlow() const;
+    int maxGlow() const;
 
 
 private:
@@ -42,12 +42,12 @@ private:
     int max_glow_value;
     int min_glow_value;
 
-    void copy_lumens(const Nova& other);
-    void move_lumens(Nova&& other) noexcept;
+    void copyLumens(const Nova& other);
+    void moveLumens(Nova&& other) noexcept;
 
-    void free_memory();
+    void freeMemory();
 
-    void recharge_inactive_lumens();
+    void rechargeInactiveLumens();
 };
 
 #endif

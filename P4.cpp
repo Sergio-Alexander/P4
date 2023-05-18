@@ -90,8 +90,8 @@ void display_nova_glows(const Nova* const novas[], int num_novas) {
     for (int i = 0; i < num_novas; ++i) {
         std::cout << "Glow values for Nova " << i + 1 << ":" << std::endl;
         
-        std::cout << "Min glow value for Nova " << i + 1 << ": " << novas[i]->min_glow() << std::endl;
-        std::cout << "Max glow value for Nova " << i + 1 << ": " << novas[i]->max_glow() << std::endl;
+        std::cout << "Min glow value for Nova " << i + 1 << ": " << novas[i]->minGlow() << std::endl;
+        std::cout << "Max glow value for Nova " << i + 1 << ": " << novas[i]->maxGlow() << std::endl;
         std::cout << std::endl;
     }
 }
@@ -128,37 +128,37 @@ void test_nova_copying_call_by_value_and_assignment() {
     // Create a Nova object
     Nova original_nova(20, 10, 200, 5);
     
-    std::cout << "Original min glow (before modification): " << original_nova.min_glow() << std::endl;
-    std::cout << "Original max glow (before modification): " << original_nova.max_glow() << std::endl;
+    std::cout << "Original min glow (before modification): " << original_nova.minGlow() << std::endl;
+    std::cout << "Original max glow (before modification): " << original_nova.maxGlow() << std::endl;
 
     // Call by value: pass the Nova object to the modify_nova function
     modify_nova(original_nova);
 
-    std::cout << "Original min glow (after call by value): " << original_nova.min_glow() << std::endl;
-    std::cout << "Original max glow (after call by value): " << original_nova.max_glow() << std::endl;
+    std::cout << "Original min glow (after call by value): " << original_nova.minGlow() << std::endl;
+    std::cout << "Original max glow (after call by value): " << original_nova.maxGlow() << std::endl;
 
     // Assignment: create a new Nova object and assign the original_nova to it
     Nova assigned_nova(30, 15, 300, 6);
     assigned_nova = original_nova;
 
-    std::cout << "Assigned min glow: " << assigned_nova.min_glow() << std::endl;
-    std::cout << "Assigned max glow: " << assigned_nova.max_glow() << std::endl;
+    std::cout << "Assigned min glow: " << assigned_nova.minGlow() << std::endl;
+    std::cout << "Assigned max glow: " << assigned_nova.maxGlow() << std::endl;
 }
 
 void test_nova_move_value(){
-    std::cout << "Min Glow of Nova 1: " << novas[1]->min_glow() << std::endl;
-    std::cout << "Max Glow of Nova 1: " << novas[1]->max_glow() << std::endl;
+    std::cout << "Min Glow of Nova 1: " << novas[1]->minGlow() << std::endl;
+    std::cout << "Max Glow of Nova 1: " << novas[1]->maxGlow() << std::endl;
 
     Nova* novar(std::move(novas[1]));
-    std::cout << "novar(moved nova)  Min Glow " << novar->min_glow() << std::endl;
-    std::cout << "novar(moved nova)  Max Glow " << novar->max_glow() << std::endl;
+    std::cout << "novar(moved nova)  Min Glow " << novar->minGlow() << std::endl;
+    std::cout << "novar(moved nova)  Max Glow " << novar->maxGlow() << std::endl;
 }
 
 void test_nova_move_assignment(){
-    std::cout << "Min Glow of Nova 2: " << novas[2]->min_glow() << std::endl;
-    std::cout << "Max Glow of Nova 2: " << novas[2]->max_glow() << std::endl;
+    std::cout << "Min Glow of Nova 2: " << novas[2]->minGlow() << std::endl;
+    std::cout << "Max Glow of Nova 2: " << novas[2]->maxGlow() << std::endl;
 
     Nova* noval = std::move(novas[2]);
-    std::cout << "noval(moved nova)  Min Glow " << noval->min_glow() << std::endl;
-    std::cout << "noval(moved nova)  Max Glow " << noval->max_glow() << std::endl;
+    std::cout << "noval(moved nova)  Min Glow " << noval->minGlow() << std::endl;
+    std::cout << "noval(moved nova)  Max Glow " << noval->maxGlow() << std::endl;
 }

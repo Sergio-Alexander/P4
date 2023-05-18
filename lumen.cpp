@@ -117,6 +117,7 @@ int Lumen::currentGlowValue() {
     return brightness * size;
 }
 
+/************************************************** Overloading Assignments********************************************************************/
 
 Lumen::Lumen(const Lumen& other) {
     // Copy each data member from the other object
@@ -139,6 +140,57 @@ Lumen& Lumen::operator=(const Lumen& other) {
     // Return a reference to this instance
     return *this;
 }
+
+// Comparison operators
+bool Lumen::operator==(const Lumen& other) const {
+    return brightness == other.brightness && power == other.power;
+}
+
+bool Lumen::operator!=(const Lumen& other) const {
+    return !(*this == other);
+}
+
+bool Lumen::operator<(const Lumen& other) const {
+    return brightness < other.brightness;
+}
+
+bool Lumen::operator>(const Lumen& other) const {
+    return brightness > other.brightness;
+}
+
+bool Lumen::operator<=(const Lumen& other) const {
+    return !(*this > other);
+}
+
+bool Lumen::operator>=(const Lumen& other) const {
+    return !(*this < other);
+}
+
+// Arithmetic operators
+Lumen& Lumen::operator+=(const Lumen& other) {
+    brightness += other.brightness;
+    power += other.power;
+    return *this;
+}
+
+Lumen Lumen::operator+(const Lumen& other) const {
+    Lumen result = *this;
+    result += other;
+    return result;
+}
+
+Lumen& Lumen::operator++() { // prefix increment
+    ++brightness;
+    ++power;
+    return *this;
+}
+
+Lumen Lumen::operator++(int) { // postfix increment
+    Lumen temp = *this;
+    ++*this;
+    return temp;
+}
+
 
 /*
 Implementation Invariant:

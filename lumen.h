@@ -31,33 +31,27 @@ public:
     bool isErratic();
 
     int currentGlowValue(); // must be public because Nova needs to access it
+    
+
+    // Copy constructor
+    Lumen(const Lumen& other);
+
+    // Copy assignment operator
+    Lumen& operator=(const Lumen& other);
 
 
-   // Comparison operators
     bool operator==(const Lumen& other) const;
-
     bool operator!=(const Lumen& other) const;
-
     bool operator<(const Lumen& other) const;
-
     bool operator>(const Lumen& other) const;
-
     bool operator<=(const Lumen& other) const;
-
     bool operator>=(const Lumen& other) const;
 
     // Arithmetic operators
     Lumen& operator+=(const Lumen& other);
-
     Lumen operator+(const Lumen& other) const;
-
     Lumen& operator++(); // prefix increment
- 
-
     Lumen operator++(int); // postfix increment
-
-
-
     
 private:
     int brightness;
