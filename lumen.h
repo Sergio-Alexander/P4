@@ -67,7 +67,7 @@ public:
     Lumen& operator--(); // prefix increment
     Lumen operator--(int); // postfix increment
     
-// private:
+private:
     int brightness;
     int size;
     int power;

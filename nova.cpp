@@ -99,6 +99,210 @@ Nova& Nova::operator=(Nova&& other) noexcept {
     return *this;
 }
 
+bool Nova::operator==(const Nova& other) const{
+    if (this->num_lumens != other.num_lumens) {
+        return false;
+    }
+    for (int i = 0; i < num_lumens; i++) {
+        if (!(*this->lumens[i] == *other.lumens[i])) {
+            return false;
+        }
+    }
+    return true;
+}
+bool Nova::operator!=(const Nova& other) const{
+    return !(*this == other);
+}
+bool Nova::operator<(const Nova& other) const{
+    return num_lumens < other.num_lumens;
+}
+bool Nova::operator>(const Nova& other) const{
+    return num_lumens > other.num_lumens;
+}
+bool Nova::operator<=(const Nova& other) const{
+    return !(*this > other);
+}
+bool Nova::operator>=(const Nova& other) const{
+    return !(*this < other);
+}
+
+
+Nova Nova::operator+(const Nova& other) const{
+    // New size is sum of sizes of Nova1 and Nova2
+    int newSize = this->num_lumens + other.num_lumens;
+    
+    // Create a new Nova with arbitrary initial brightness, size, and power.
+    Nova result(1, newSize, 1, newSize);
+    
+    // Copy contents of Nova1 and Nova2 into result.
+    for (int i = 0; i < this->num_lumens; i++) {
+        *result.lumens[i] = *this->lumens[i];
+    }
+    for (int i = 0; i < other.num_lumens; i++) {
+        *result.lumens[i + this->num_lumens] = *other.lumens[i];
+    }
+    
+    return result;
+} // standard
+Nova Nova::operator+(int value) const{
+    // Create a copy of the current Nova.
+    Nova result(*this);
+    
+    // Add the specified number of default Lumens.
+    for (int i = 0; i < value; i++) {
+        Lumen* newLumen = new Lumen(1, result.num_lumens + i, 1); // Assuming this creates a default Lumen.
+
+        // Dynamically allocate a new array to hold the expanded Lumens.
+        Lumen** newLumens = new Lumen*[result.num_lumens + 1];
+        
+        // Copy the old Lumens over.
+        for (int j = 0; j < result.num_lumens; j++) {
+            newLumens[j] = result.lumens[j];
+        }
+
+        // Add the new Lumen.
+        newLumens[result.num_lumens] = newLumen;
+        
+        // Clean up and update properties.
+        delete[] result.lumens;
+        result.lumens = newLumens;
+        result.num_lumens += 1;
+    }
+
+    return result;
+} //mixed mode
+
+
+
+
+
+
+Nova& Nova::operator+=(const Nova& other){
+    // This operation will simply extend the current Nova by adding the contents of the other Nova.
+    // We'll need to dynamically allocate a new array, copy the contents over, and then clean up.
+    int newSize = this->num_lumens + other.num_lumens;
+    Lumen** newLumens = new Lumen*[newSize];
+    
+    // Copy contents of the current Nova.
+    for (int i = 0; i < this->num_lumens; i++) {
+        newLumens[i] = this->lumens[i];
+    }
+    
+    // Copy contents of the other Nova.
+    for (int i = 0; i < other.num_lumens; i++) {
+        newLumens[i + this->num_lumens] = other.lumens[i];
+    }
+    
+    // Clean up and update properties.
+    delete[] this->lumens;
+    this->lumens = newLumens;
+    this->num_lumens = newSize;
+    
+    return *this;
+} // shortcut standard
+Nova& Nova::operator+=(int value){
+    int newSize = this->num_lumens + value;
+    Lumen** newLumens = new Lumen*[newSize];
+    
+    // Copy contents of the current Nova.
+    for (int i = 0; i < this->num_lumens; i++) {
+        newLumens[i] = this->lumens[i];
+    }
+    
+    // Add new Lumens.
+    for (int i = this->num_lumens; i < newSize; i++) {
+        newLumens[i] = new Lumen(1, i, 1); // Assuming this creates a default Lumen.
+    }
+    
+    // Clean up and update properties.
+    delete[] this->lumens;
+    this->lumens = newLumens;
+    this->num_lumens = newSize;
+    
+    return *this;
+} // shortcut mixed mode
+
+Nova& Nova::operator++(){
+    // In this case, we will just add one default Lumen to the current Nova.
+    int newSize = this->num_lumens + 1;
+    Lumen** newLumens = new Lumen*[newSize];
+    
+    // Copy contents of the current Nova.
+    for (int i = 0; i < this->num_lumens; i++) {
+        newLumens[i] = this->lumens[i];
+    }
+    
+    // Add new Lumen.
+    newLumens[this->num_lumens] = new Lumen(1, this->num_lumens, 1); // Assuming this creates a default Lumen.
+    
+    // Clean up and update properties.
+    delete[] this->lumens;
+    this->lumens = newLumens;
+    this->num_lumens = newSize;
+    
+    return *this;
+} // prefix increment
+Nova Nova::operator++(int){
+    // Create a copy of the current object.
+    Nova copy = *this;
+    
+    // Use the prefix increment on the current object.
+    ++(*this);
+    
+    // Return the original un-incremented copy.
+    return copy;
+} // postfix increment
+
+
+Nova Nova::operator-(const Nova& other) const{
+    
+} // standard
+Nova Nova::operator-(int value) const{
+
+} // mixed mode 
+
+Nova& Nova::operator-=(const Nova& other){
+
+} // shortcut standard
+Nova& Nova::operator-=(int value){
+
+} // shortcut mixed mode
+
+Nova& Nova::operator--(){
+    if (num_lumens <= 0) {
+        throw std::runtime_error("Cannot decrement: no lumens in the Nova object.");
+    }
+    
+    Lumen** newLumens = new Lumen*[num_lumens - 1];
+
+    // Copy all but the last Lumen.
+    for (int i = 0; i < num_lumens - 1; i++) {
+        newLumens[i] = lumens[i];
+    }
+
+    // Delete the last Lumen and free its memory.
+    delete lumens[num_lumens - 1];
+    
+    // Free the old array and update the lumens pointer.
+    delete[] lumens;
+    lumens = newLumens;
+
+    // Decrement the lumen count.
+    --num_lumens;
+
+    return *this;
+
+} // prefix increment
+Nova Nova::operator--(int){
+    // Create a copy of the current state.
+    Nova temp(*this);
+    
+    // Use the prefix operator to decrement this instance.
+    --(*this);
+
+    return temp;
+} // postfix increment
+
 /********************************* Nova Core Functions **********************************************/
 
 // Pre-Condition: x should be a non-negative integer and less than or equal to the number of lumens

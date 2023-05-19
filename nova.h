@@ -40,22 +40,26 @@ public:
     bool operator>(const Nova& other) const;
     bool operator>=(const Nova& other) const;
 
+    // Arithmetic operators
 
-    // addition 
-    Nova& operator++(); // Prefix increment
-    Nova operator++(int); // Postfix increment
+    Nova operator+(const Nova& other) const; // standard
+    Nova operator+(int value) const; // mixed mode 
 
-    Nova operator+(const Nova& other) const; // Addition
-    Nova& operator+=(const Nova& other); // Addition assignment
+    Nova& operator+=(const Nova& other); // shortcut standard
+    Nova& operator+=(int value); // shortcut mixed mode
+
+    Nova& operator++(); // prefix increment
+    Nova operator++(int); // postfix increment
 
 
+    Nova operator-(const Nova& other) const; // standard
+    Nova operator-(int value) const; // mixed mode 
 
-    // subtraction
-    Nova& operator--(); // Prefix increment
-    Nova operator--(int); // Postfix increment
+    Nova& operator-=(const Nova& other); // shortcut standard
+    Nova& operator-=(int value); // shortcut mixed mode
 
-    Nova operator-(const Nova& other) const; // Addition
-    Nova& operator-=(const Nova& other); // Addition assignment
+    Nova& operator--(); // prefix increment
+    Nova operator--(int); // postfix increment
 
 
     void glow(int x);

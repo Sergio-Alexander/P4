@@ -127,30 +127,26 @@ int Lumen::currentGlowValue() {
 
 /************************************************** Overloading Assignments********************************************************************/
 
-// Lumen::Lumen(const Lumen& other) {
-//     // Copy each data member from the other object
-//     brightness = other.brightness;
-//     power = other.power;
-//     size = other.size;
-//     brightness_copy = other.brightness_copy;
-//     power_copy = other.power_copy;
-
-// }
-
 // Copy assignment operator
 Lumen& Lumen::operator=(const Lumen& other) {
     // Guard self assignment
     if (this == &other) {
         return *this;
     }
-    // Free up any resources that *this may have (not needed in this simple class)
 
     // Copy each data member from the other object
     brightness = other.brightness;
     power = other.power;
     size = other.size;
+
     brightness_copy = other.brightness_copy;
     power_copy = other.power_copy;
+
+    glow_request = other.glow_request;
+    dimming_value = other.dimming_value;
+    power_threshold = other.power_threshold;
+    max_reset = other.max_reset;
+    reset_count = other.reset_count;
 
     // Return a reference to this instance
     return *this;
@@ -158,7 +154,7 @@ Lumen& Lumen::operator=(const Lumen& other) {
 
 // Comparison operators
 bool Lumen::operator==(const Lumen& other) const {
-    return brightness == other.brightness && power == other.power &&  size == other.size;
+    return brightness == other.brightness && power == other.power && size == other.size;
 }
 
 bool Lumen::operator!=(const Lumen& other) const {
@@ -229,7 +225,17 @@ Lumen Lumen::operator+(int value) const{ // mixed mode
 Lumen& Lumen::operator+=(const Lumen& other) { // standard
     this->brightness += other.brightness;
     this->power += other.power;
-    
+    this->size += other.size;
+
+    this->brightness_copy += other.brightness_copy;
+    this->power_copy += other.power_copy;
+
+    this->glow_request += other.glow_request;
+    this->dimming_value += other.dimming_value;
+    this->power_threshold += other.power_threshold;
+    this->max_reset += other.max_reset;
+    this->reset_count += other.reset_count;
+
     return *this;
 }
 
@@ -239,6 +245,14 @@ Lumen& Lumen::operator+=(int value){ // mixed mode
     size += value;
 
     brightness_copy += value;
+    power_copy += value;
+
+    glow_request += value;
+    dimming_value += value;
+    power_threshold += value;
+    max_reset += value;
+    reset_count += value;
+
     return *this;
 }
 
@@ -246,6 +260,16 @@ Lumen& Lumen::operator++() { // prefix increment
     ++brightness;
     ++power;
     ++size;
+
+    ++brightness_copy;
+    ++power_copy;
+
+    ++glow_request;
+    ++dimming_value;
+    ++power_threshold;
+    ++max_reset;
+    ++reset_count;
+
     return *this;
 }
 
@@ -261,50 +285,107 @@ Lumen Lumen::operator++(int) { // postfix increment
 
 Lumen Lumen::operator-(const Lumen& other) const {
     Lumen result = *this;
-    result -= other;
+
+    result.brightness = this->brightness - other.brightness;
+    result.power = this->power - other.power;
+    result.size = this->size - other.size;
+
+    result.brightness_copy = this->brightness_copy - other.brightness_copy;
+    result.power_copy = this->power_copy - other.power_copy;
+
+    result.glow_request = this->glow_request - other.glow_request;
+    result.dimming_value = this->dimming_value - other.dimming_value;
+    result.power_threshold = this->power_threshold - other.power_threshold;
+    result.max_reset = this->max_reset - other.max_reset;
+    result.reset_count = this->reset_count - other.reset_count;
+
+    if (!this->charged || !other.charged){
+        result.charged = false;
+    } else{
+        result.charged = true;
+    }
+
     return result;
 }
 
 // Mixed-mode subtraction
 Lumen Lumen::operator-(int value) const {
     Lumen result = *this;
-    result -= value;
+    result.brightness = this->brightness - value;
+    result.power = this->power - value;
+    result.size = this->size - value;
+
+    result.brightness_copy = this->brightness_copy - value;
+    result.power_copy = this->power_copy - value;
+
+    result.glow_request = this->glow_request - value;
+    result.dimming_value = this->dimming_value - value;
+    result.power_threshold = this->power_threshold - value;
+    result.max_reset = this->max_reset - value;
+    result.reset_count = this->reset_count - value;
+
     return result;
 }
 
 // Shortcut assignment
-Lumen& Lumen::operator-=(const Lumen& other) {
-    brightness -= other.brightness;
-    power -= other.power;
-    size -= other.size;
+Lumen& Lumen::operator-=(const Lumen& other) { // standard
+    this->brightness -= other.brightness;
+    this->power -= other.power;
+    this->size -= other.size;
+
+    this->brightness_copy -= other.brightness_copy;
+    this->power_copy -= other.power_copy;
+
+    this->glow_request -= other.glow_request;
+    this->dimming_value -= other.dimming_value;
+    this->power_threshold -= other.power_threshold;
+    this->max_reset -= other.max_reset;
+    this->reset_count -= other.reset_count;
+
     return *this;
 }
 
-Lumen& Lumen::operator-=(int value) {
+Lumen& Lumen::operator-=(int value) { // mixed mode
     brightness -= value;
     power -= value;
     size -= value;
+
+    brightness_copy -= value;
+    power_copy -= value;
+
+    glow_request -= value;
+    dimming_value -= value;
+    power_threshold -= value;
+    max_reset -= value;
+    reset_count -= value;
+
     return *this;
 }
 
 // Decrement operators
-Lumen& Lumen::operator--() {
+Lumen& Lumen::operator--() { // prefix decrement
     --brightness;
     --power;
     --size;
+
+    --brightness_copy;
+    --power_copy;
+
+    --glow_request;
+    --dimming_value;
+    --power_threshold;
+    --max_reset;
+    --reset_count;
+
     return *this;
 }
 
-Lumen Lumen::operator--(int) {
+Lumen Lumen::operator--(int) { // postfix decrement
     Lumen temp = *this;
     --*this;
     return temp;
 }
 
-// Friends for mixed-mode subtraction (non-member functions)
-Lumen operator-(int value, const Lumen& lumen) {
-    return value - lumen;
-}
 
 
 /*

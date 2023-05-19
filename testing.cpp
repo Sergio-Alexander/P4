@@ -1,47 +1,60 @@
-#include "lumen.h"
 #include <iostream>
+#include "lumen.h"
+#include "nova.h"
 using namespace std;
+int main() {
+    // Create two Nova objects with same properties
+    Nova nova1(5, 10, 20, 3);
+    Nova nova2(5, 10, 20, 3);
 
-int main(){
+    // Test equality
+    if (nova1 == nova2) {
+        std::cout << "Nova1 and Nova2 are equal" << std::endl;
+    } else {
+        std::cout << "Nova1 and Nova2 are not equal" << std::endl;
+    }
 
-    Lumen bulb (5, 10, 15);
+    // Modify nova2
+    nova2.glow(2);
 
-    bulb.glow();
-    bulb.glow();
+    // Test inequality
+    if (nova1 != nova2) {
+        std::cout << "Nova1 and Nova2 are not equal" << std::endl;
+    } else {
+        std::cout << "Nova1 and Nova2 are equal" << std::endl;
+    }
 
-    cout << bulb.brightness << endl;
-    cout << bulb.power << endl;
-    cout << bulb.size << endl;
-    cout << bulb.power_copy << endl;
-    cout << bulb.brightness_copy << endl;
+    // Create two new Nova objects for comparing
+    Nova nova3(1, 2, 3, 2);
+    Nova nova4(2, 3, 4, 2);
 
-    // Lumen bulb2 (1, 2, 3);
-    // bulb2.glow();
+    // Test '<' operator
+    if (nova3 < nova4) {
+        std::cout << "Nova3 is less than Nova4" << std::endl;
+    } else {
+        std::cout << "Nova3 is not less than Nova4" << std::endl;
+    }
 
-    // Lumen bulb3 = bulb + bulb2;
-    // cout << bulb3.brightness << endl; // 6
-    // cout << bulb3.power << endl; // 18
-    // cout << bulb3.size << endl; // 12
-    // cout << bulb3.power_copy << endl; //15
-    // cout << bulb3.brightness_copy << endl; // 5
-    // cout << bulb3.glow_request << endl;
+    // Test '>' operator
+    if (nova3 > nova4) {
+        std::cout << "Nova3 is greater than Nova4" << std::endl;
+    } else {
+        std::cout << "Nova3 is not greater than Nova4" << std::endl;
+    }
 
-    // Lumen bulb4 = bulb + 420;
-    // cout << bulb4.brightness << endl; // 6
-    cout << endl;
-    ++bulb;
-    cout << bulb.brightness << endl;
-    cout << bulb.power << endl;
-    cout << bulb.size << endl;
-    cout << bulb.power_copy << endl;
-    cout << bulb.brightness_copy << endl;
+    // Test '<=' operator
+    if (nova3 <= nova4) {
+        std::cout << "Nova3 is less than or equal to Nova4" << std::endl;
+    } else {
+        std::cout << "Nova3 is not less than or equal to Nova4" << std::endl;
+    }
 
-    int i = 10;
-
-    int j = ++i;
-
-    cout << j << endl;
-
+    // Test '>=' operator
+    if (nova3 >= nova4) {
+        std::cout << "Nova3 is greater than or equal to Nova4" << std::endl;
+    } else {
+        std::cout << "Nova3 is not greater than or equal to Nova4" << std::endl;
+    }
 
     return 0;
 }
