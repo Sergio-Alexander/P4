@@ -95,7 +95,7 @@ void display_nova_glows(const Nova* const novas[], int num_novas) {
 }
 
 void initialize_novas(Nova** novas, int num_novas, int num_lumens_per_nova){
-    for (int i = 0; i < num_novas; ++i) {
+    for (int i = 0; i < num_novas; i++) {
         int initial_brightness = 10 + 5 * i;
         int initial_size = 2 + i;
         int initial_power = 50 + 10 * i;
@@ -104,7 +104,7 @@ void initialize_novas(Nova** novas, int num_novas, int num_lumens_per_nova){
 }
 
 void glow_novas(Nova** novas, int num_novas, int lumens_to_glow) {
-    for (int i = 0; i < num_novas; ++i) {
+    for (int i = 0; i < num_novas; i++) {
         novas[i]->glow(lumens_to_glow);
     }
 }
