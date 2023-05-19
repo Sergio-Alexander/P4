@@ -32,14 +32,13 @@ public:
 
     int currentGlowValue(); // must be public because Nova needs to access it
     
-
     // Copy constructor
-    Lumen(const Lumen& other);
+    // Lumen(const Lumen& other);
 
     // Copy assignment operator
     Lumen& operator=(const Lumen& other);
 
-
+    // Comparison operators
     bool operator==(const Lumen& other) const;
     bool operator!=(const Lumen& other) const;
     bool operator<(const Lumen& other) const;
@@ -48,29 +47,46 @@ public:
     bool operator>=(const Lumen& other) const;
 
     // Arithmetic operators
-    Lumen& operator+=(const Lumen& other);
-    Lumen operator+(const Lumen& other) const;
+
+    Lumen operator+(const Lumen& other) const; // standard
+    Lumen operator+(int value) const; // mixed mode 
+
+    Lumen& operator+=(const Lumen& other); // shortcut standard
+    Lumen& operator+=(int value); // shortcut mixed mode
+
     Lumen& operator++(); // prefix increment
     Lumen operator++(int); // postfix increment
+
+
+    Lumen operator-(const Lumen& other) const; // standard
+    Lumen operator-(int value) const; // mixed mode 
+
+    Lumen& operator-=(const Lumen& other); // shortcut standard
+    Lumen& operator-=(int value); // shortcut mixed mode
+
+    Lumen& operator--(); // prefix increment
+    Lumen operator--(int); // postfix increment
     
-private:
+// private:
     int brightness;
     int size;
     int power;
     int brightness_copy;
     int power_copy;
-    int glow_request;
-
-    bool charged;
-
-    static constexpr int INACTIVE_STATE = 0;
-    static constexpr int reset_threshold = 5;
 
     int dimming_value;
     int power_threshold;
 
+    int glow_request;
+    int max_reset;
+    int reset_count;
+    bool charged;
+    static constexpr int INACTIVE_STATE = 0;
+    static constexpr int reset_threshold = 5;
+
+
     void resetOriginal();
-    int ErraticValue();
+    int erraticValue();
     bool resetRequest();
 };
 

@@ -99,12 +99,7 @@ Nova& Nova::operator=(Nova&& other) noexcept {
     return *this;
 }
 
-
-
-
-
 /********************************* Nova Core Functions **********************************************/
-
 
 // Pre-Condition: x should be a non-negative integer and less than or equal to the number of lumens
 // Post-Condition: The first x lumens are made to glow, and inactive lumens are recharged if necessary
@@ -190,7 +185,6 @@ int Nova::maxGlow() const {
     return max_glow_value;
 }
 
-
 // Pre-Condition: None
 // Post-Condition: Recharges inactive lumens if more than half of the lumens in the Nova object are inactive
 void Nova::rechargeInactiveLumens() {
@@ -210,25 +204,6 @@ void Nova::rechargeInactiveLumens() {
         }
     }
 }
-
-
-// /************************************** Getters **************************************/
-
-// // Pre-Condition: index must be a valid integer within the range of the number of lumens
-// // Post-Condition: Returns a pointer to the lumen at the given index
-// Lumen* Nova::get_lumen(int index) const{
-//     if (index < 0 || index >= num_lumens) {
-//         throw std::out_of_range("Index is out of range.");
-//     }
-//     return lumens[index];
-// }
-
-// // Pre-Condition: None
-// // Post-Condition: Returns the number of lumens in the Nova object
-// int Nova::get_num_lumens() const {
-//     return num_lumens;
-// }
-
 
 /*
 Implementation invariants for the Nova

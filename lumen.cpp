@@ -23,6 +23,8 @@ ASSUMPTIONS:
 
 // Preconditions: input_brightness, input_size, and input_power are positive
 // Postconditions: Lumen object is created with given input values
+
+
 Lumen::Lumen(int input_brightness, int input_size, int input_power) {
     if (input_brightness <= 0 || input_size <= 0 || input_power <= 0) {
         throw std::out_of_range("All input values for Lumen must be positive.");
@@ -35,6 +37,8 @@ Lumen::Lumen(int input_brightness, int input_size, int input_power) {
     glow_request = 0;
     dimming_value = static_cast<int>(brightness_copy * (10.0 / 100));
     power_threshold = static_cast<int>(power_copy * (20.0 / 100));
+    max_reset = size * 3;
+    reset_count = 0;
 
     charged = false;
 }
@@ -46,7 +50,7 @@ int Lumen::glow() {
     power--;
     if (!isActive()) {
         if (isErratic()) {
-            return ErraticValue();
+            return erraticValue();
         }
         return dimming_value;
     }
@@ -56,10 +60,15 @@ int Lumen::glow() {
 // Preconditions: None
 // Postconditions: Resets the Lumen object if conditions are met, otherwise reduces brightness by 1
 bool Lumen::reset() {
+    if (reset_count >= max_reset){
+        return false;
+    }
+
     if (resetRequest()) {
         resetOriginal();
         return true;
     }
+
     brightness--;
     return false;
 }
@@ -68,9 +77,14 @@ void Lumen::resetOriginal(){
     power = power_copy;
     brightness = brightness_copy;
     glow_request = 0;
+    reset_count++;
 }
 
-
+// Preconditions: None
+// Postconditions: Returns true if the reset request is valid, otherwise false
+bool Lumen::resetRequest() {
+    return glow_request >= reset_threshold && power > INACTIVE_STATE;
+}
 
 // Pre-condition: None
 // Post-condition: power restored to its original value and charged set to true
@@ -87,7 +101,7 @@ bool Lumen::isActive() {
 
 // Preconditions: The Lumen object is in an erratic state
 // Postconditions: Returns a non-negative value less than the current power
-int Lumen::ErraticValue() {
+int Lumen::erraticValue() {
     int erraticFactor = 10;
     int erraticValue = brightness * size * (power + erraticFactor);
     return erraticValue;
@@ -99,18 +113,12 @@ bool Lumen::isErratic() {
     return power <= power_threshold && power > INACTIVE_STATE;
 }
 
-// Preconditions: None
-// Postconditions: Returns true if the reset request is valid, otherwise false
-bool Lumen::resetRequest() {
-    return glow_request >= reset_threshold && power > INACTIVE_STATE;
-}
-
 // Pre-condition: None
 // Post-condition: return brightness * size if lumen is active, otherwise return dimming_value or ErraticValue
 int Lumen::currentGlowValue() {
     if (!isActive()) {
         if (isErratic()) {
-            return ErraticValue();
+            return erraticValue();
         }
         return dimming_value;
     }
@@ -119,11 +127,15 @@ int Lumen::currentGlowValue() {
 
 /************************************************** Overloading Assignments********************************************************************/
 
-Lumen::Lumen(const Lumen& other) {
-    // Copy each data member from the other object
-    brightness = other.brightness;
-    power = other.power;
-}
+// Lumen::Lumen(const Lumen& other) {
+//     // Copy each data member from the other object
+//     brightness = other.brightness;
+//     power = other.power;
+//     size = other.size;
+//     brightness_copy = other.brightness_copy;
+//     power_copy = other.power_copy;
+
+// }
 
 // Copy assignment operator
 Lumen& Lumen::operator=(const Lumen& other) {
@@ -136,6 +148,9 @@ Lumen& Lumen::operator=(const Lumen& other) {
     // Copy each data member from the other object
     brightness = other.brightness;
     power = other.power;
+    size = other.size;
+    brightness_copy = other.brightness_copy;
+    power_copy = other.power_copy;
 
     // Return a reference to this instance
     return *this;
@@ -143,7 +158,7 @@ Lumen& Lumen::operator=(const Lumen& other) {
 
 // Comparison operators
 bool Lumen::operator==(const Lumen& other) const {
-    return brightness == other.brightness && power == other.power;
+    return brightness == other.brightness && power == other.power &&  size == other.size;
 }
 
 bool Lumen::operator!=(const Lumen& other) const {
@@ -151,11 +166,11 @@ bool Lumen::operator!=(const Lumen& other) const {
 }
 
 bool Lumen::operator<(const Lumen& other) const {
-    return brightness < other.brightness;
+    return brightness < other.brightness && power < other.power && size < other.size;
 }
 
 bool Lumen::operator>(const Lumen& other) const {
-    return brightness > other.brightness;
+    return brightness > other.brightness && power > other.power && size > other.size;
 }
 
 bool Lumen::operator<=(const Lumen& other) const {
@@ -167,21 +182,70 @@ bool Lumen::operator>=(const Lumen& other) const {
 }
 
 // Arithmetic operators
-Lumen& Lumen::operator+=(const Lumen& other) {
-    brightness += other.brightness;
-    power += other.power;
+
+Lumen Lumen::operator+(const Lumen& other) const{
+    Lumen result = *this;
+
+    result.brightness = this->brightness + other.brightness;
+    result.power = this->power + other.power;
+    result.size = this->size + other.size;
+
+    result.brightness_copy = this->brightness_copy + other.brightness_copy;
+    result.power_copy = this->power_copy + other.power_copy;
+
+    result.glow_request = this->glow_request + other.glow_request;
+    result.dimming_value = this->dimming_value + other.dimming_value;
+    result.power_threshold = this->power_threshold + other.power_threshold;
+    result.max_reset = this->max_reset + other.max_reset;
+    result.reset_count = this->reset_count + other.reset_count;
+
+    if (!this->charged || !other.charged){
+        result.charged = false;
+    } else{
+        result.charged = true;
+    }
+
+    return result;
+}
+
+Lumen Lumen::operator+(int value) const{ // mixed mode
+    Lumen result = *this;
+    result.brightness = this->brightness + value;
+    result.power = this->power + value;
+    result.size = this->size + value;
+
+    result.brightness_copy = this->brightness_copy + value;
+    result.power_copy = this->power_copy + value;
+
+    result.glow_request = this->glow_request + value;
+    result.dimming_value = this->dimming_value + value;
+    result.power_threshold = this->power_threshold + value;
+    result.max_reset = this->max_reset + value;
+    result.reset_count = this->reset_count + value;
+
+    return result;
+}
+
+Lumen& Lumen::operator+=(const Lumen& other) { // standard
+    this->brightness += other.brightness;
+    this->power += other.power;
+    
     return *this;
 }
 
-Lumen Lumen::operator+(const Lumen& other) const {
-    Lumen result = *this;
-    result += other;
-    return result;
+Lumen& Lumen::operator+=(int value){ // mixed mode
+    brightness += value;
+    power += value;
+    size += value;
+
+    brightness_copy += value;
+    return *this;
 }
 
 Lumen& Lumen::operator++() { // prefix increment
     ++brightness;
     ++power;
+    ++size;
     return *this;
 }
 
@@ -189,6 +253,57 @@ Lumen Lumen::operator++(int) { // postfix increment
     Lumen temp = *this;
     ++*this;
     return temp;
+}
+
+
+
+////////////////////////////////////////////////////////////////
+
+Lumen Lumen::operator-(const Lumen& other) const {
+    Lumen result = *this;
+    result -= other;
+    return result;
+}
+
+// Mixed-mode subtraction
+Lumen Lumen::operator-(int value) const {
+    Lumen result = *this;
+    result -= value;
+    return result;
+}
+
+// Shortcut assignment
+Lumen& Lumen::operator-=(const Lumen& other) {
+    brightness -= other.brightness;
+    power -= other.power;
+    size -= other.size;
+    return *this;
+}
+
+Lumen& Lumen::operator-=(int value) {
+    brightness -= value;
+    power -= value;
+    size -= value;
+    return *this;
+}
+
+// Decrement operators
+Lumen& Lumen::operator--() {
+    --brightness;
+    --power;
+    --size;
+    return *this;
+}
+
+Lumen Lumen::operator--(int) {
+    Lumen temp = *this;
+    --*this;
+    return temp;
+}
+
+// Friends for mixed-mode subtraction (non-member functions)
+Lumen operator-(int value, const Lumen& lumen) {
+    return value - lumen;
 }
 
 

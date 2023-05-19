@@ -45,8 +45,6 @@ void display_glow_values(const Nova* );
 void initialize_novas(Nova**, int, int);
 void glow_novas(Nova**, int, int);
 void glow_novas_50_times(Nova**, int, int);
-void reset_all_lumens(Nova**, int, int);
-
 
 void modify_nova(Nova);
 void test_nova_copying_call_by_value_and_assignment();

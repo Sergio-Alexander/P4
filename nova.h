@@ -30,6 +30,34 @@ public:
     Nova& operator=(const Nova& other);
     Nova& operator=(Nova&& other) noexcept;
 
+    //Overloading Operators
+
+    // comparison
+    bool operator==(const Nova& other) const;
+    bool operator!=(const Nova& other) const;
+    bool operator<(const Nova& other) const;
+    bool operator<=(const Nova& other) const;
+    bool operator>(const Nova& other) const;
+    bool operator>=(const Nova& other) const;
+
+
+    // addition 
+    Nova& operator++(); // Prefix increment
+    Nova operator++(int); // Postfix increment
+
+    Nova operator+(const Nova& other) const; // Addition
+    Nova& operator+=(const Nova& other); // Addition assignment
+
+
+
+    // subtraction
+    Nova& operator--(); // Prefix increment
+    Nova operator--(int); // Postfix increment
+
+    Nova operator-(const Nova& other) const; // Addition
+    Nova& operator-=(const Nova& other); // Addition assignment
+
+
     void glow(int x);
     int minGlow() const;
     int maxGlow() const;
