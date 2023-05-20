@@ -1,6 +1,6 @@
 /*
 Name: Sergio Satyabrata
-Date: April 14, 2023 
+Date: May 19, 2023 
 Class: CPSC-3200
 Revision History: Revised
 Platform: MacBook Pro (OSX)
@@ -13,7 +13,7 @@ manipulating their internal Lumen objects, and displaying the results of these o
 ASSUMPTIONS:
 
 1) The number of Nova objects and the number of Lumens per Nova object are fixed and 
-known at compile-time (as defined by the constants num_novas and num_lumens). 
+known at compile-time (as defined by the constants NUMNOVAS and NUMLUMENS). 
 This allows for the use of arrays for storing Nova objects and simplifies memory management.
 
 2) The client assumes that the Nova and Lumen classes are implemented correctly and provide 
@@ -39,111 +39,110 @@ execution and easier debugging.
 
 using namespace std;
 
-const int num_novas = 5;
-const int num_lumens = 5;
+const int NUMNOVAS = 5;
+const int NUMLUMENS = 5;
 
 vector<unique_ptr<Nova>> novas;
 Luminosity luminate;
 
-void display_nova_glows();
-void display_glow_values(const Nova& nova);
-
-void initialize_novas(int num_novas, int num_lumens);
-void glow_novas(int num_novas, int lumens_to_glow);
-void glow_novas_50_times(int num_novas, int lumens_to_glow);
-
-void modify_nova(Nova& nova_object);
-void test_nova_copying_call_by_value_and_assignment(vector<unique_ptr<Nova>>& novav);
-
-void test_nova_move_assignment();
-void test_nova_move_value();
-
+void displayNovaGlows();
+void displayGlowValues(const Nova& nova);
+void initializeNovas(int NUMNOVAS, int NUMLUMENS);
+void glowNovas(int NUMNOVAS, int lumensToGlow);
+void glowNovas50Times(int NUMNOVAS, int lumensToGlow);
+void modifyNova(Nova& nova_object);
+void testNovaCopyingCallByValueAndAssignment(vector<unique_ptr<Nova>>& novav);
+void TestNovaMoveAssignment();
+void testNovaMoveValue();
 void testOperatorOverloads(vector<unique_ptr<Nova>>& novav);
-
 void testCreateAndRemoveNova(vector<unique_ptr<Nova>>& novas);
+void testSharedPointer(vector<unique_ptr<Nova>>& novav);
 
 int main() {
-    initialize_novas(num_novas, num_lumens);
+    initializeNovas(NUMNOVAS, NUMLUMENS);
 
     std::cout << "********* Initializing all Novas ********* " << std::endl;
-    glow_novas(num_novas, 5);
+    glowNovas(NUMNOVAS, 5);
     std::cout << std::endl;
-    display_nova_glows();
+    displayNovaGlows();
 
     std::cout << "******** Glowing Lumens in Nova 50 times *******" << std::endl;
-    glow_novas_50_times(num_novas, 5);
+    glowNovas50Times(NUMNOVAS, 5);
     std::cout << std::endl;
-    display_nova_glows();
+    displayNovaGlows();
 
     std::cout << "********* Copy *********" << std::endl;
-    test_nova_copying_call_by_value_and_assignment(novas);
+    testNovaCopyingCallByValueAndAssignment(novas);
     std::cout << std::endl;
 
     std::cout << "********* Move *********" << std::endl;
-    test_nova_move_value();
+    testNovaMoveValue();
     std::cout << std::endl;
-    test_nova_move_assignment();
+    TestNovaMoveAssignment();
+    std::cout << std::endl;
 
-    cout << "Testing operators" << endl;
+    std::cout << "********* Operators *********" << std::endl;
     testOperatorOverloads(novas);
+    std::cout << std::endl;
 
-
-
-    cout << "Testing Add and Remove" << endl;
+    std::cout << "********* Add and Remove on Heap *********" << std::endl;
     testCreateAndRemoveNova(novas);
+    std::cout << std::endl;
+
+    std::cout << "********* Test Shared Ptr *********" << std::endl;
+    testSharedPointer(novas);
+    std::cout << std::endl;
 
     return 0;
-
-
 }
 
-void display_nova_glows() {
+void displayNovaGlows() {
     // Display the glow values for each Nova object
     for (size_t i = 0; i < novas.size(); ++i) {
         std::cout << "Glow values for Nova " << i + 1 << ":" << std::endl;
-        display_glow_values(*novas[i]);
+        displayGlowValues(*novas[i]);
     }
 }
 
-void display_glow_values(const Nova& nova) {
+void displayGlowValues(const Nova& nova) {
     std::cout << "Min glow value: " << nova.minGlow() << std::endl;
     std::cout << "Max glow value: " << nova.maxGlow() << std::endl;
     std::cout << std::endl;
 }
 
-void initialize_novas(int num_novas, int num_lumens) {
+void initializeNovas(int NUMNOVAS, int NUMLUMENS) {
     std::srand(std::time(nullptr)); // Initialize the random seed
     
-    for (int i = 0; i < num_novas; i++) {
+    for (int i = 0; i < NUMNOVAS; i++) {
         int initial_brightness = rand() % 11 + 10;  // Random brightness between 10 and 20
         int initial_size = rand() % 2 + i + 2;      // Random size between (2 + i) and (3 + i)
         int initial_power = rand() % 11 + 50 + 10*i; // Random power between (50 + 10*i) and (60 + 10*i)
 
-        novas.push_back(std::make_unique<Nova>(&luminate, initial_brightness, initial_size, initial_power, num_lumens));
+        novas.push_back(std::make_unique<Nova>(&luminate, initial_brightness, initial_size, initial_power, NUMLUMENS));
     }
 }
 
-void glow_novas(int num_novas, int lumens_to_glow) {
+void glowNovas(int NUMNOVAS, int lumensToGlow) {
     for (auto& nova : novas) {
-        nova->glow(lumens_to_glow);
+        nova->glow(lumensToGlow);
     }
 }
 
-void glow_novas_50_times(int num_novas, int lumens_to_glow) {
+void glowNovas50Times(int NUMNOVAS, int lumensToGlow) {
     for (auto& nova : novas) {
         for (int j = 0; j < 50; ++j) {
-            nova->glow(lumens_to_glow);
+            nova->glow(lumensToGlow);
         }
     }
 }
 
-void modify_nova(Nova& nova_object) {
+void modifyNova(Nova& nova_object) {
     // Modify nova_object
     // Note: Modifications will affect the original Nova object due to call-by-reference
     nova_object.glow(3);
 }
 
-void test_nova_copying_call_by_value_and_assignment(vector<unique_ptr<Nova>>& novav) {
+void testNovaCopyingCallByValueAndAssignment(vector<unique_ptr<Nova>>& novav) {
     Nova nova_copy = *novav[0];
 
     cout << "Min glow of original is: " << novav[0]->minGlow() << endl;
@@ -154,21 +153,21 @@ void test_nova_copying_call_by_value_and_assignment(vector<unique_ptr<Nova>>& no
 
 }
 
-void test_nova_move_assignment() {
+void TestNovaMoveAssignment() {
     if (novas[0]) {
         Nova nova_move = move(*novas[0]); // move assignment
         novas[0].reset(); // It's a good practice to reset the unique_ptr after move
         cout << "Moved Nova glow values:" << endl;
-        display_glow_values(nova_move);
+        displayGlowValues(nova_move);
     }
 }
 
-void test_nova_move_value() {
+void testNovaMoveValue() {
     if (novas[1]) {
         Nova nova_move(move(*novas[1])); // move constructor to move object
         novas[1].reset(); // It's a good practice to reset the unique_ptr after move
         cout << "Moved Nova glow values:" << endl;
-        display_glow_values(nova_move);
+        displayGlowValues(nova_move);
     }
 }
 
@@ -185,7 +184,7 @@ void testSharedPointer(vector<unique_ptr<Nova>>& novav){
 
     nova_shared.reset();
 
-    cout << "Nova Shared Resetted" << endl;
+    cout << "Nova Shared Resetted: " << endl;
 
     cout << "Nova Shared use count is: " << nova_shared.use_count() << endl;
     cout << "Nova Shared1 use count is: " << test_nova_shared1.use_count() << endl;
@@ -198,27 +197,27 @@ void testOperatorOverloads(vector<unique_ptr<Nova>>& novas) {
     // Testing addition operator
     Nova sum = *novas[2] + *novas[3];
     cout << "Testing + operator:" << endl;
-    display_glow_values(sum);
+    displayGlowValues(sum);
 
     // Testing addition operator for mixed mode
     Nova sum_mixed = *novas[2] + 5;
     cout << "Testing + operator with mixed mode:" << endl;
-    display_glow_values(sum_mixed);
+    displayGlowValues(sum_mixed);
     
     // Testing subtraction operator
     Nova diff = *novas[4] - *novas[3];
     cout << "Testing - operator:" << endl;
-    display_glow_values(diff);
+    displayGlowValues(diff);
 
     // Testing subtraction operator for mixed mode
     Nova diff_mixed = *novas[4] - 3;
     cout << "Testing - operator with mixed mode:" << endl;
-    display_glow_values(diff_mixed);
+    displayGlowValues(diff_mixed);
 
     // Testing assignment operator
     Nova assigned = *novas[4];
     cout << "Testing = operator:" << endl;
-    display_glow_values(assigned);
+    displayGlowValues(assigned);
 
     // Testing equality and inequality operators
     if (*novas[4] == *novas[3])
@@ -256,35 +255,34 @@ void testOperatorOverloads(vector<unique_ptr<Nova>>& novas) {
     Nova& nova_ref = *novas[4];
     ++nova_ref;
     cout << "Testing prefix increment operator:" << endl;
-    display_glow_values(nova_ref);
+    displayGlowValues(nova_ref);
 
     nova_ref++;
     cout << "Testing postfix increment operator:" << endl;
-    display_glow_values(nova_ref);
+    displayGlowValues(nova_ref);
 
     // Testing decrement operators
     --nova_ref;
     cout << "Testing prefix decrement operator:" << endl;
-    display_glow_values(nova_ref);
+    displayGlowValues(nova_ref);
 
     nova_ref--;
     cout << "Testing postfix decrement operator:" << endl;
-    display_glow_values(nova_ref);
+    displayGlowValues(nova_ref);
 }
-
 
 void testCreateAndRemoveNova(vector<unique_ptr<Nova>>& novas) {
     // Create a new Nova
     cout << "\nCreating a new Nova..." << endl;
-    int initial_brightness = rand() % 11 + 10;  // Random brightness between 10 and 20
-    int initial_size = rand() % 2 + 2;      // Random size between (2 + i) and (3 + i)
-    int initial_power = rand() % 11 + 50 + 10 * 2; // Random power between (50 + 10*i) and (60 + 10*i)
-    unique_ptr<Nova> newNova = make_unique<Nova>(&luminate, initial_brightness, initial_size, initial_power, num_lumens);
+    int initial_brightness = rand() % 11 + 10; 
+    int initial_size = rand() % 2 + 2;      
+    int initial_power = rand() % 11 + 50 + 10 * 2; 
+    unique_ptr<Nova> newNova = make_unique<Nova>(&luminate, initial_brightness, initial_size, initial_power, NUMLUMENS);
     novas.push_back(move(newNova));  // add new Nova to the vector
     cout << "A new Nova created and added. Total Novas now: " << novas.size() << "\n";
 
     // Display glow values of the newly created Nova
-    display_glow_values(*novas.back());
+    displayGlowValues(*novas.back());
 
     // Remove a Nova
     cout << "\nRemoving a Nova..." << endl;

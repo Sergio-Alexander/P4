@@ -1,6 +1,6 @@
 /*
 Name: Sergio Satyabrata
-Date: April 14, 2023 
+Date: May 19, 2023 
 Class: CPSC-3200
 Revision History: Revised
 Platform: MacBook Pro (OSX)
@@ -35,7 +35,7 @@ class Luminosity : public ILuminosity{
 
 class Nova {
 public:
-    Nova(ILuminosity* luminate, int initial_brightness, int initial_size, int initial_power, int num_lumens);
+    Nova(ILuminosity* luminate, int initialBrightness, int initialSize, int initialPower, int numLumens);
 
     ~Nova();
     Nova(const Nova& other);
@@ -85,10 +85,10 @@ private:
     ILuminosity* luminate;
     
     Lumen** lumens;
-    int num_lumens;
+    int numLumens;
 
-    int max_glow_value;
-    int min_glow_value;
+    int maxGlowValue;
+    int minGlowValue;
 
     void copyLumens(const Nova& other);
     void moveLumens(Nova&& other) noexcept;
@@ -104,7 +104,7 @@ private:
 /*
 Class Invariants for the Nova class:
 
-- The number of lumens (num_lumens) must always be non-negative and should be positive.
+- The number of lumens (numLumens) must always be non-negative and should be positive.
 - The lumens pointer must always point to an array of Lumen pointers, or be nullptr if there are no lumens.
 - The individual Lumen objects within the lumens array must be properly initialized and have valid state, according to the Lumen class invariants.
 - The methods provided for managing and manipulating the Lumen objects (e.g., glow, reset_lumen) should maintain the invariants of the Lumen class and not introduce any inconsistencies in the state of the Lumen objects.

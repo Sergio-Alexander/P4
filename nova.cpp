@@ -1,6 +1,6 @@
 /*
 Name: Sergio Satyabrata
-Date: April 14, 2023 
+Date: May 19, 2023 
 Class: CPSC-3200
 Revision History: Revised
 Platform: MacBook Pro (OSX)
@@ -28,18 +28,18 @@ the Nova are inactive and it will recharge lumens that are stable within the Nov
 
 // Pre-Condition: initial brightness, size, and power should not be negative; should be positive
 // Post-Condition: first lumen is initialized along with the rest of the lumens for the nova
-Nova::Nova(ILuminosity* luminate, int initial_brightness, int initial_size, int initial_power, int num_lumens) {
-    if (initial_brightness <= 0 || initial_size <= 0 || initial_power <= 0 || num_lumens <=0) {
+Nova::Nova(ILuminosity* luminate, int initialBrightness, int initialSize, int initialPower, int numLumens) {
+    if (initialBrightness <= 0 || initialSize <= 0 || initialPower <= 0 || numLumens <=0) {
         throw std::out_of_range("All input values for Nova must be positive.");
     }
-    this->num_lumens = num_lumens;
+    this->numLumens = numLumens;
     this->luminate = luminate;
-    lumens = new Lumen*[num_lumens];
+    lumens = new Lumen*[numLumens];
 
-    for (int i = 0; i < num_lumens; i++) {
-        int brightness = initial_brightness + i;
-        int size = initial_size + i;
-        int power = initial_power + i * 10;
+    for (int i = 0; i < numLumens; i++) {
+        int brightness = initialBrightness + i;
+        int size = initialSize + i;
+        int power = initialPower + i * 10;
         lumens[i] = luminate->illuminate(brightness, size, power);
     }
 }
@@ -73,8 +73,8 @@ Nova& Nova::operator=(const Nova& other) {
 // Pre-Condition: other must be a valid Nova object
 // Post-Condition: The current Nova object takes ownership of the other Nova object's resources, and other's resources are reset
 Nova::Nova(Nova&& other) noexcept
-: num_lumens(other.num_lumens), lumens(other.lumens) {
-    other.num_lumens = 0;
+: numLumens(other.numLumens), lumens(other.lumens) {
+    other.numLumens = 0;
     other.lumens = nullptr;
 }
 
@@ -87,51 +87,70 @@ Nova& Nova::operator=(Nova&& other) noexcept {
         delete[] lumens;
 
         // Transfer ownership of resources from the source object
-        num_lumens = other.num_lumens;
+        numLumens = other.numLumens;
         lumens = other.lumens;
 
         // Reset the source object's resource pointers
-        other.num_lumens = 0;
+        other.numLumens = 0;
         other.lumens = nullptr;
     }
     return *this;
 }
 
+// Precondition: 'other' is an instance of Nova that can be compared with 'this' instance
+// Postcondition: returns true if both instances are the same, false otherwise
 bool Nova::operator==(const Nova& other) const{
-    if (this->num_lumens != other.num_lumens) {
+    if (this->numLumens != other.numLumens) {
         return false;
     }
-    for (int i = 0; i < num_lumens; i++) {
+    for (int i = 0; i < numLumens; i++) {
         if (!(*this->lumens[i] == *other.lumens[i])) {
             return false;
         }
     }
     return true;
 }
+
+// Precondition: 'other' is an instance of Nova that can be compared with 'this' instance
+// Postcondition: returns true if both instances are not the same, false otherwise
 bool Nova::operator!=(const Nova& other) const{
     return !(*this == other);
 }
+
+// Precondition: 'other' is an instance of Nova that can be compared with 'this' instance
+// Postcondition: returns true if 'this' instance has fewer lumens than 'other', false otherwise
 bool Nova::operator<(const Nova& other) const{
-    return num_lumens < other.num_lumens;
+    return numLumens < other.numLumens;
 }
+
+// Precondition: 'other' is an instance of Nova that can be compared with 'this' instance
+// Postcondition: returns true if 'this' instance has more lumens than 'other', false otherwise
 bool Nova::operator>(const Nova& other) const{
-    return num_lumens > other.num_lumens;
+    return numLumens > other.numLumens;
 }
+
+// Precondition: 'other' is an instance of Nova that can be compared with 'this' instance
+// Postcondition: returns true if 'this' instance has fewer or equal lumens than 'other', false otherwise
 bool Nova::operator<=(const Nova& other) const{
     return !(*this > other);
 }
+
+// Precondition: 'other' is an instance of Nova that can be compared with 'this' instance
+// Postcondition: returns true if 'this' instance has more or equal lumens than 'other', false otherwise
 bool Nova::operator>=(const Nova& other) const{
     return !(*this < other);
 }
 
+// Precondition: 'other' is an instance of Nova with the same number of lumens as 'this' instance
+// Postcondition: returns a new Nova instance that is the sum of 'this' and 'other' instance
 Nova Nova::operator+(const Nova& other) const{
     // Ensure that Nova1 and Nova2 have the same number of lumens
-    if (this->num_lumens != other.num_lumens) {
+    if (this->numLumens != other.numLumens) {
         throw std::invalid_argument("Nova objects must have the same number of lumens to be added together.");
     }
 
     // New size is the size of either Nova (since they have the same size)
-    int newSize = this->num_lumens;
+    int newSize = this->numLumens;
 
     // Create a new Nova with arbitrary initial brightness, size, and power.
     // The new Nova won't actually own any Lumen objects yet.
@@ -148,100 +167,114 @@ Nova Nova::operator+(const Nova& other) const{
 
     return result;
 } // standard
+
+// Precondition: 'value' is an integer to be added to 'this' instance
+// Postcondition: returns a new Nova instance that has 'value' number of new lumens added
 Nova Nova::operator+(int value) const{
     // Create a copy of the current Nova.
     Nova result(*this);
     
     // Add the specified number of default Lumens.
     for (int i = 0; i < value; i++) {
-        Lumen* newLumen = new Lumen(1, result.num_lumens + i, 1); // Assuming this creates a default Lumen.
+        Lumen* newLumen = new Lumen(1, result.numLumens + i, 1); // Assuming this creates a default Lumen.
 
         // Dynamically allocate a new array to hold the expanded Lumens.
-        Lumen** newLumens = new Lumen*[result.num_lumens + 1];
+        Lumen** newLumens = new Lumen*[result.numLumens + 1];
         
         // Copy the old Lumens over.
-        for (int j = 0; j < result.num_lumens; j++) {
+        for (int j = 0; j < result.numLumens; j++) {
             newLumens[j] = result.lumens[j];
         }
 
         // Add the new Lumen.
-        newLumens[result.num_lumens] = newLumen;
+        newLumens[result.numLumens] = newLumen;
         
         // Clean up and update properties.
         delete[] result.lumens;
         result.lumens = newLumens;
-        result.num_lumens += 1;
+        result.numLumens += 1;
     }
 
     return result;
 } //mixed mode
 
 
+// Precondition: 'other' is an instance of Nova that can be added to 'this' instance
+// Postcondition: 'this' instance has been modified to include the lumens from 'other' instance
 Nova& Nova::operator+=(const Nova& other){
     // This operation will simply extend the current Nova by adding the contents of the other Nova.
     // We'll need to dynamically allocate a new array, copy the contents over, and then clean up.
-    int newSize = this->num_lumens + other.num_lumens;
+    int newSize = this->numLumens + other.numLumens;
     Lumen** newLumens = new Lumen*[newSize];
     
     // Copy contents of the current Nova.
-    for (int i = 0; i < this->num_lumens; i++) {
+    for (int i = 0; i < this->numLumens; i++) {
         newLumens[i] = this->lumens[i];
     }
     
     // Copy contents of the other Nova.
-    for (int i = 0; i < other.num_lumens; i++) {
-        newLumens[i + this->num_lumens] = other.lumens[i];
+    for (int i = 0; i < other.numLumens; i++) {
+        newLumens[i + this->numLumens] = other.lumens[i];
     }
     
     // Clean up and update properties.
     delete[] this->lumens;
     this->lumens = newLumens;
-    this->num_lumens = newSize;
+    this->numLumens = newSize;
     
     return *this;
 } // shortcut standard
+
+// Precondition: 'value' is an integer indicating the number of new lumens to be added to 'this' instance
+// Postcondition: 'this' instance has been modified to include 'value' number of new lumens
 Nova& Nova::operator+=(int value){
-    int newSize = this->num_lumens + value;
+    int newSize = this->numLumens + value;
     Lumen** newLumens = new Lumen*[newSize];
     
     // Copy contents of the current Nova.
-    for (int i = 0; i < this->num_lumens; i++) {
+    for (int i = 0; i < this->numLumens; i++) {
         newLumens[i] = this->lumens[i];
     }
     
     // Add new Lumens.
-    for (int i = this->num_lumens; i < newSize; i++) {
+    for (int i = this->numLumens; i < newSize; i++) {
         newLumens[i] = new Lumen(1, i, 1); // Assuming this creates a default Lumen.
     }
     
     // Clean up and update properties.
     delete[] this->lumens;
     this->lumens = newLumens;
-    this->num_lumens = newSize;
+    this->numLumens = newSize;
     
     return *this;
 } // shortcut mixed mode
 
+
+// Precondition: none
+// Postcondition: 'this' instance has been modified to include one new default lumen
 Nova& Nova::operator++(){
     // In this case, we will just add one default Lumen to the current Nova.
-    int newSize = this->num_lumens + 1;
+    int newSize = this->numLumens + 1;
     Lumen** newLumens = new Lumen*[newSize];
     
     // Copy contents of the current Nova.
-    for (int i = 0; i < this->num_lumens; i++) {
+    for (int i = 0; i < this->numLumens; i++) {
         newLumens[i] = this->lumens[i];
     }
     
     // Add new Lumen.
-    newLumens[this->num_lumens] = new Lumen(1, this->num_lumens, 1); // Assuming this creates a default Lumen.
+    newLumens[this->numLumens] = new Lumen(1, this->numLumens, 1); // Assuming this creates a default Lumen.
     
     // Clean up and update properties.
     delete[] this->lumens;
     this->lumens = newLumens;
-    this->num_lumens = newSize;
+    this->numLumens = newSize;
     
     return *this;
 } // prefix increment
+
+// Precondition: none
+// Postcondition: returns a copy of the original 'this' instance and modifies 'this' instance to include one new default lumen
 Nova Nova::operator++(int){
     // Create a copy of the current object.
     Nova copy = *this;
@@ -253,9 +286,10 @@ Nova Nova::operator++(int){
     return copy;
 } // postfix increment
 
-
+// Precondition: 'other' is an instance of Nova with equal or fewer number of lumens as 'this' instance
+// Postcondition: returns a new Nova instance that is the result of subtracting 'other' instance from 'this' instance
 Nova Nova::operator-(const Nova& other) const{
-    if (this->num_lumens != other.num_lumens) {
+    if (this->numLumens != other.numLumens) {
         throw std::out_of_range("Cannot subtract Novas with different numbers of Lumens.");
     }
 
@@ -263,7 +297,7 @@ Nova Nova::operator-(const Nova& other) const{
     Nova result(*this);
 
     // Subtract each Lumen.
-    for (int i = 0; i < num_lumens; i++) {
+    for (int i = 0; i < numLumens; i++) {
         int brightness = this->lumens[i]->getBrightness() - other.lumens[i]->getBrightness();
         int size = this->lumens[i]->getSize() - other.lumens[i]->getSize();
         int power = this->lumens[i]->getPower() - other.lumens[i]->getPower();
@@ -280,8 +314,11 @@ Nova Nova::operator-(const Nova& other) const{
 
     return result;
 } // standard
+
+// Precondition: 'value' is an integer less than or equal to the number of lumens in 'this' instance
+// Postcondition: returns a new Nova instance that is the result of subtracting 'value' lumens from 'this' instance
 Nova Nova::operator-(int value) const{
-    if (value >= num_lumens) {
+    if (value >= numLumens) {
         throw std::runtime_error("Cannot subtract more lumens than the Nova object contains.");
     }
 
@@ -296,20 +333,25 @@ Nova Nova::operator-(int value) const{
     return novaCopy;
 } // mixed mode 
 
+// Precondition: 'other' is an instance of Nova with equal or fewer number of lumens as 'this' instance
+// Postcondition: 'this' instance has been modified by subtracting the lumens from 'other' instance
 Nova& Nova::operator-=(const Nova& other){
-    if (other.num_lumens > num_lumens) {
+    if (other.numLumens > numLumens) {
         throw std::runtime_error("Cannot subtract a larger Nova from a smaller one.");
     }
 
     // Subtract other's lumens from this Nova's lumens.
-    for (int i = 0; i < other.num_lumens; i++) {
+    for (int i = 0; i < other.numLumens; i++) {
         --(*this);
     }
 
     return *this;
 } // shortcut standard
+
+// Precondition: 'value' is an integer less than or equal to the number of lumens in 'this' instance
+// Postcondition: 'this' instance has been modified by subtracting 'value' lumens
 Nova& Nova::operator-=(int value){
-    if (value > num_lumens) {
+    if (value > numLumens) {
         throw std::runtime_error("Cannot subtract more lumens than the Nova object contains.");
     }
 
@@ -321,31 +363,36 @@ Nova& Nova::operator-=(int value){
     return *this;
 } // shortcut mixed mode
 
+// Precondition: 'this' instance has at least one lumen
+// Postcondition: 'this' instance has been modified by subtracting one lumen
 Nova& Nova::operator--(){
-    if (num_lumens <= 0) {
+    if (numLumens <= 0) {
         throw std::runtime_error("Cannot decrement: no lumens in the Nova object.");
     }
     
-    Lumen** newLumens = new Lumen*[num_lumens - 1];
+    Lumen** newLumens = new Lumen*[numLumens - 1];
 
     // Copy all but the last Lumen.
-    for (int i = 0; i < num_lumens - 1; i++) {
+    for (int i = 0; i < numLumens - 1; i++) {
         newLumens[i] = lumens[i];
     }
 
     // Delete the last Lumen and free its memory.
-    delete lumens[num_lumens - 1];
+    delete lumens[numLumens - 1];
     
     // Free the old array and update the lumens pointer.
     delete[] lumens;
     lumens = newLumens;
 
     // Decrement the lumen count.
-    --num_lumens;
+    --numLumens;
 
     return *this;
 
 } // prefix increment
+
+// Precondition: 'this' instance has at least one lumen
+// Postcondition: returns a copy of the original 'this' instance and modifies 'this' instance by subtracting one lumen
 Nova Nova::operator--(int){
     // Create a copy of the current state.
     Nova temp(*this);
@@ -361,7 +408,7 @@ Nova Nova::operator--(int){
 // Pre-Condition: x should be a non-negative integer and less than or equal to the number of lumens
 // Post-Condition: The first x lumens are made to glow, and inactive lumens are recharged if necessary
 void Nova::glow(int x) {
-    if (x < 0 || x > num_lumens) {
+    if (x < 0 || x > numLumens) {
         throw std::out_of_range("Invalid number of lumens to glow.");
     }
     for (int i = 0; i < x; i++) {
@@ -375,9 +422,9 @@ void Nova::glow(int x) {
 // Pre-Condition: other must be a valid Nova object
 // Post-Condition: Creates a deep copy of the lumens from the other Nova object into the 
 void Nova::copyLumens(const Nova& other) {
-    num_lumens = other.num_lumens;
-    lumens = new Lumen*[num_lumens];
-    for (int i = 0; i < num_lumens; i++) {
+    numLumens = other.numLumens;
+    lumens = new Lumen*[numLumens];
+    for (int i = 0; i < numLumens; i++) {
         lumens[i] = new Lumen(*other.lumens[i]);
     }
 }
@@ -385,16 +432,16 @@ void Nova::copyLumens(const Nova& other) {
 // Pre-Condition: other must be a valid Nova object
 // Post-Condition: Transfers ownership of lumens from the other Nova object to the current 
 void Nova::moveLumens(Nova&& other) noexcept {
-    num_lumens = other.num_lumens;
+    numLumens = other.numLumens;
     lumens = other.lumens;
-    other.num_lumens = 0;
+    other.numLumens = 0;
     other.lumens = nullptr;
 }
 
 // Pre-Condition: lumens must be a valid array of Lumen pointers
 // Post-Condition: Frees the memory allocated for the lumens and their array
 void Nova::freeMemory() {
-    for (int i = 0; i < num_lumens; i++) {
+    for (int i = 0; i < numLumens; i++) {
         delete lumens[i];
     }
     delete[] lumens;
@@ -404,42 +451,42 @@ void Nova::freeMemory() {
 // Post-Condition: Returns the minimum glow value among all lumens in the Nova object
 int Nova::minGlow() const {
     // If there are no lumens, return an appropriate value or error
-    if(num_lumens == 0) {
+    if(numLumens == 0) {
         throw std::runtime_error("No lumens in the Nova object.");
     }
 
     // Assume the first lumen has the minimum glow value
-    int min_glow_value = lumens[0]->currentGlowValue();
+    int minGlowValue = lumens[0]->currentGlowValue();
 
-    for (int i = 1; i < num_lumens; i++) {
-        int current_glow_value = lumens[i]->currentGlowValue();
-        if (current_glow_value < min_glow_value) {
-            min_glow_value = current_glow_value;
+    for (int i = 1; i < numLumens; i++) {
+        int currentGlowValue = lumens[i]->currentGlowValue();
+        if (currentGlowValue < minGlowValue) {
+            minGlowValue = currentGlowValue;
         }
     }
 
-    return min_glow_value;
+    return minGlowValue;
 }
 
 // Pre-Condition: None
 // Post-Condition: Returns the maximum glow value among all lumens in the Nova object
 int Nova::maxGlow() const {
     // If there are no lumens, return an appropriate value or error
-    if(num_lumens == 0) {
+    if(numLumens == 0) {
         throw std::runtime_error("No lumens in the Nova object.");
     }
 
     // Assume the first lumen has the maximum glow value
-    int max_glow_value = lumens[0]->currentGlowValue();
+    int maxGlowValue = lumens[0]->currentGlowValue();
 
-    for (int i = 1; i < num_lumens; i++) {
-        int current_glow_value = lumens[i]->currentGlowValue();
-        if (current_glow_value > max_glow_value) {
-            max_glow_value = current_glow_value;
+    for (int i = 1; i < numLumens; i++) {
+        int currentGlowValue = lumens[i]->currentGlowValue();
+        if (currentGlowValue > maxGlowValue) {
+            maxGlowValue = currentGlowValue;
         }
     }
 
-    return max_glow_value;
+    return maxGlowValue;
 }
 
 // Pre-Condition: None
@@ -447,14 +494,14 @@ int Nova::maxGlow() const {
 void Nova::rechargeInactiveLumens() {
     int inactive_count = 0;
     // Count the number of inactive lumens
-    for (int i = 0; i < num_lumens; i++) {
+    for (int i = 0; i < numLumens; i++) {
         if (!lumens[i]->isActive()) {
             inactive_count++;
         }
     }
     // Recharge lumens if more than half are inactive
-    if (inactive_count > num_lumens / 2) {
-        for (int i = 0; i < num_lumens; i++) {
+    if (inactive_count > numLumens / 2) {
+        for (int i = 0; i < numLumens; i++) {
             if (!lumens[i]->isErratic() && lumens[i]->isActive()) {
                 lumens[i]->recharge();
             }
@@ -462,8 +509,10 @@ void Nova::rechargeInactiveLumens() {
     }
 }
 
+// Precondition: none
+// Postcondition: returns the number of lumens within a Nova
 int Nova::getNumLumens(){
-    return num_lumens;
+    return numLumens;
 }
 
 /*
@@ -473,5 +522,5 @@ Implementation invariants for the Nova
 - The glow() method must always return a non-negative value based on the current state of the Nova object.
 - The reset() and recharge() methods must always restore the brightness and power of the Nova object to their original values.
 - The isActive(), isErratic(), and resetRequest() methods must always return a boolean value based on the current state of the Nova object.
-- The current_glow_value() method must always return the current brightness value based on the current state of the Nova object.
+- The currentGlowValue() method must always return the current brightness value based on the current state of the Nova object.
 */

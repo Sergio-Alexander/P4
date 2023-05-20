@@ -1,6 +1,6 @@
 /*
 Name: Sergio Satyabrata
-Date: April 14, 2023 
+Date: May 19, 2023 
 Class: CPSC-3200
 Revision History: Revised
 Platform: MacBook Pro (OSX)
@@ -21,7 +21,7 @@ functions and variables, ensuring proper encapsulation and separation of concern
 
 class Lumen {
 public:
-    Lumen(int input_brightness, int input_size, int input_power);
+    Lumen(int inputBrightness, int inputSize, int inputPower);
 
     int glow(); 
     bool reset();
@@ -75,18 +75,18 @@ private:
     int brightness;
     int size;
     int power;
-    int brightness_copy;
-    int power_copy;
+    int brightnessCopy;
+    int powerCopy;
 
-    int dimming_value;
-    int power_threshold;
+    int dimmingValue;
+    int powerThreshold;
 
-    int glow_request;
-    int max_reset;
-    int reset_count;
+    int glowRequest;
+    int maxReset;
+    int resetCount;
     bool charged;
-    static constexpr int INACTIVE_STATE = 0;
-    static constexpr int reset_threshold = 5;
+    static constexpr int INACTIVESTATE = 0;
+    static constexpr int RESETTHRESHOLD = 5;
 
 
     void resetOriginal();
@@ -101,10 +101,10 @@ private:
 Class invariants for Lumen:
 
 - brightness, size, and power must always be non-negative integer values.
-- brightness_copy and power_copy must hold the original brightness and power values, respectively.
-- glow_request must be a non-negative integer value that counts the number of glow() calls.
+- brightnessCopy and powerCopy must hold the original brightness and power values, respectively.
+- glowRequest must be a non-negative integer value that counts the number of glow() calls.
 - charged is a boolean that represents whether the Lumen has been recharged or not.
-- INACTIVE_STATE and reset_threshold are constants with fixed values.
-- dimming_value must always be calculated as 10% of the original brightness.
-- power_threshold must always be calculated as 20% of the original power.
+- INACTIVESTATE and RESETTHRESHOLD are constants with fixed values.
+- dimmingValue must always be calculated as 10% of the original brightness.
+- powerThreshold must always be calculated as 20% of the original power.
 */
