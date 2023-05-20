@@ -27,6 +27,8 @@ NOTE:
 - When using the -- or ++ it removes/adds 1 lumen from/to the Nova. 
 - When adding or subtracting a value to or from the Nova, + (int value), it will add / remove the number of lumens within the Nova. The value must be at the right side of the Nova.
 e.g novas + 5
+
+- The comparison operators are just testing for the size of the Nova, meaning how many lumens there are in the Nova.
 */
 
 #include "nova.h"

@@ -113,8 +113,6 @@ void displayGlowValues(const Nova& nova) {
 }
 
 void initializeNovas(int NUMNOVAS, int NUMLUMENS) {
-    std::srand(std::time(nullptr)); // Initialize the random seed
-    
     for (int i = 0; i < NUMNOVAS; i++) {
         int initial_brightness = rand() % 11 + 10;  // Random brightness between 10 and 20
         int initial_size = rand() % 2 + i + 2;      // Random size between (2 + i) and (3 + i)
