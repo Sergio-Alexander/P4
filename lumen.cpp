@@ -21,6 +21,8 @@ ASSUMPTIONS:
 When adding a value to a lumen, the lumen must be at the left hand side. The same thing goes with subtraction.
 e.g. lumen1 + 1;
 e.g. lumen1 - 1;
+
+When adding a lumen to another lumen, specific variables will be added. The same thing will go with subtraction.
 */
 
 // New Feature added:

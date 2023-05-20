@@ -12,6 +12,8 @@ source in different conditions. The Nova class is responsible for maintaining th
 Lumen objects, ensuring proper resource management, and providing methods to interact with and 
 modify the collection of Lumens. This header file contains the declarations of the Nova class's 
 member functions and variables, ensuring proper encapsulation and separation of concerns in the program.
+
+New Feature Added: Dependency Injection via Interface
 */
 
 

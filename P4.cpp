@@ -9,6 +9,8 @@ The driver program for the Lumen and Nova classes is designed to demonstrate and
 functionality of these classes. It focuses on creating multiple Nova objects, 
 manipulating their internal Lumen objects, and displaying the results of these operations. 
 
+New Feature Added:
+Random Number Generators (RNG) for the variables of brightness, size, and power.
 
 ASSUMPTIONS:
 

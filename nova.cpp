@@ -18,6 +18,15 @@ i.e., positive integers for brightness, size, and power, and a positive integer 
 
 NOTE: recharge() function was implemented as it will internally recharge if more than half of the lumens in
 the Nova are inactive and it will recharge lumens that are stable within the Nova.
+
+
+NOTE: 
+- When adding a Nova to another Nova with the + operator, we are adding the contents of the Nova, meaning the lumens will get added up.
+- When subtracting a Nova from another Nova, we are subtracting the values within the Nova, meaning the Lumens' values. If it is negative or 0, they are set to 1.
+- The -= and += subtracts/adds the Nova on the right side to the left side. It must be in this order.
+- When using the -- or ++ it removes/adds 1 lumen from/to the Nova. 
+- When adding or subtracting a value to or from the Nova, + (int value), it will add / remove the number of lumens within the Nova. The value must be at the right side of the Nova.
+e.g novas + 5
 */
 
 #include "nova.h"
@@ -176,7 +185,7 @@ Nova Nova::operator+(int value) const{
     
     // Add the specified number of default Lumens.
     for (int i = 0; i < value; i++) {
-        Lumen* newLumen = new Lumen(1, result.numLumens + i, 1); // Assuming this creates a default Lumen.
+        Lumen* newLumen = new Lumen(1, result.numLumens + i, 1);
 
         // Dynamically allocate a new array to hold the expanded Lumens.
         Lumen** newLumens = new Lumen*[result.numLumens + 1];
@@ -263,7 +272,7 @@ Nova& Nova::operator++(){
     }
     
     // Add new Lumen.
-    newLumens[this->numLumens] = new Lumen(1, this->numLumens, 1); // Assuming this creates a default Lumen.
+    newLumens[this->numLumens] = new Lumen(1, this->numLumens, 1); 
     
     // Clean up and update properties.
     delete[] this->lumens;
