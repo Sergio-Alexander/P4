@@ -386,6 +386,17 @@ Lumen Lumen::operator--(int) { // postfix decrement
     return temp;
 }
 
+int Lumen::getBrightness(){
+    return brightness;
+} // For Nova to access these elements
+int Lumen::getPower(){
+    return power;
+} // For Nova to access these elements
+int Lumen::getSize(){
+    return size;
+} // For Nova to access these elements
+    
+
 
 
 /*

@@ -20,9 +20,22 @@ member functions and variables, ensuring proper encapsulation and separation of 
 
 #include "lumen.h"
 
+class ILuminosity{
+    public:
+    virtual ~ILuminosity() = default;
+    virtual Lumen* illuminate(int brightness, int size, int power) = 0;
+};
+
+class Luminosity : public ILuminosity{
+    public:
+    Lumen* illuminate (int brightness, int size, int power) override{
+        return new Lumen(brightness, size, power);
+    }
+};
+
 class Nova {
 public:
-    Nova(int initial_brightness, int initial_size, int initial_power, int num_lumens);
+    Nova(ILuminosity* luminate, int initial_brightness, int initial_size, int initial_power, int num_lumens);
 
     ~Nova();
     Nova(const Nova& other);
@@ -65,9 +78,12 @@ public:
     void glow(int x);
     int minGlow() const;
     int maxGlow() const;
+    int getNumLumens();
 
 
 private:
+    ILuminosity* luminate;
+    
     Lumen** lumens;
     int num_lumens;
 

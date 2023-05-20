@@ -20,28 +20,27 @@ NOTE: recharge() function was implemented as it will internally recharge if more
 the Nova are inactive and it will recharge lumens that are stable within the Nova.
 */
 
-
 #include "nova.h"
 #include <stdexcept>
 #include <iostream>
-
 
 /************************************ Nova Constructors *******************************************/
 
 // Pre-Condition: initial brightness, size, and power should not be negative; should be positive
 // Post-Condition: first lumen is initialized along with the rest of the lumens for the nova
-Nova::Nova(int initial_brightness, int initial_size, int initial_power, int num_lumens) {
+Nova::Nova(ILuminosity* luminate, int initial_brightness, int initial_size, int initial_power, int num_lumens) {
     if (initial_brightness <= 0 || initial_size <= 0 || initial_power <= 0 || num_lumens <=0) {
         throw std::out_of_range("All input values for Nova must be positive.");
     }
     this->num_lumens = num_lumens;
+    this->luminate = luminate;
     lumens = new Lumen*[num_lumens];
 
     for (int i = 0; i < num_lumens; i++) {
         int brightness = initial_brightness + i;
         int size = initial_size + i;
         int power = initial_power + i * 10;
-        lumens[i] = new Lumen(brightness, size, power);
+        lumens[i] = luminate->illuminate(brightness, size, power);
     }
 }
 
@@ -95,7 +94,6 @@ Nova& Nova::operator=(Nova&& other) noexcept {
         other.num_lumens = 0;
         other.lumens = nullptr;
     }
-
     return *this;
 }
 
@@ -126,22 +124,28 @@ bool Nova::operator>=(const Nova& other) const{
     return !(*this < other);
 }
 
-
 Nova Nova::operator+(const Nova& other) const{
-    // New size is sum of sizes of Nova1 and Nova2
-    int newSize = this->num_lumens + other.num_lumens;
-    
+    // Ensure that Nova1 and Nova2 have the same number of lumens
+    if (this->num_lumens != other.num_lumens) {
+        throw std::invalid_argument("Nova objects must have the same number of lumens to be added together.");
+    }
+
+    // New size is the size of either Nova (since they have the same size)
+    int newSize = this->num_lumens;
+
     // Create a new Nova with arbitrary initial brightness, size, and power.
-    Nova result(1, newSize, 1, newSize);
-    
-    // Copy contents of Nova1 and Nova2 into result.
-    for (int i = 0; i < this->num_lumens; i++) {
-        *result.lumens[i] = *this->lumens[i];
+    // The new Nova won't actually own any Lumen objects yet.
+    Nova result(this->luminate, 1, newSize, 1, newSize);
+
+    // Add the properties of corresponding Lumen objects in Nova1 and Nova2
+    for (int i = 0; i < newSize; i++) {
+        int newBrightness = this->lumens[i]->getBrightness() + other.lumens[i]->getBrightness();
+        int newSize = this->lumens[i]->getSize() + other.lumens[i]->getSize();
+        int newPower = this->lumens[i]->getPower() + other.lumens[i]->getPower();
+        
+        result.lumens[i] = this->luminate->illuminate(newBrightness, newSize, newPower);
     }
-    for (int i = 0; i < other.num_lumens; i++) {
-        *result.lumens[i + this->num_lumens] = *other.lumens[i];
-    }
-    
+
     return result;
 } // standard
 Nova Nova::operator+(int value) const{
@@ -171,10 +175,6 @@ Nova Nova::operator+(int value) const{
 
     return result;
 } //mixed mode
-
-
-
-
 
 
 Nova& Nova::operator+=(const Nova& other){
@@ -255,17 +255,70 @@ Nova Nova::operator++(int){
 
 
 Nova Nova::operator-(const Nova& other) const{
-    
+    if (this->num_lumens != other.num_lumens) {
+        throw std::out_of_range("Cannot subtract Novas with different numbers of Lumens.");
+    }
+
+    // Create a new Nova to hold the result.
+    Nova result(*this);
+
+    // Subtract each Lumen.
+    for (int i = 0; i < num_lumens; i++) {
+        int brightness = this->lumens[i]->getBrightness() - other.lumens[i]->getBrightness();
+        int size = this->lumens[i]->getSize() - other.lumens[i]->getSize();
+        int power = this->lumens[i]->getPower() - other.lumens[i]->getPower();
+
+        // If any properties are zero or negative, set them to 1.
+        if (brightness <= 0) brightness = 1;
+        if (size <= 0) size = 1;
+        if (power <= 0) power = 1;
+
+        // Set the properties of the Lumen in the result Nova.
+        delete result.lumens[i];
+        result.lumens[i] = new Lumen(brightness, size, power);
+    }
+
+    return result;
 } // standard
 Nova Nova::operator-(int value) const{
+    if (value >= num_lumens) {
+        throw std::runtime_error("Cannot subtract more lumens than the Nova object contains.");
+    }
 
+    // Create a new Nova object that is a copy of the current one.
+    Nova novaCopy(*this);
+
+    // Remove lumens from the copy.
+    for (int i = 0; i < value; i++) {
+        --novaCopy;
+    }
+
+    return novaCopy;
 } // mixed mode 
 
 Nova& Nova::operator-=(const Nova& other){
+    if (other.num_lumens > num_lumens) {
+        throw std::runtime_error("Cannot subtract a larger Nova from a smaller one.");
+    }
 
+    // Subtract other's lumens from this Nova's lumens.
+    for (int i = 0; i < other.num_lumens; i++) {
+        --(*this);
+    }
+
+    return *this;
 } // shortcut standard
 Nova& Nova::operator-=(int value){
+    if (value > num_lumens) {
+        throw std::runtime_error("Cannot subtract more lumens than the Nova object contains.");
+    }
 
+    // Subtract value lumens from this Nova.
+    for (int i = 0; i < value; i++) {
+        --(*this);
+    }
+
+    return *this;
 } // shortcut mixed mode
 
 Nova& Nova::operator--(){
@@ -407,6 +460,10 @@ void Nova::rechargeInactiveLumens() {
             }
         }
     }
+}
+
+int Nova::getNumLumens(){
+    return num_lumens;
 }
 
 /*

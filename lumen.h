@@ -66,6 +66,10 @@ public:
 
     Lumen& operator--(); // prefix increment
     Lumen operator--(int); // postfix increment
+
+    int getBrightness(); // For Nova to access these elements
+    int getPower(); // For Nova to access these elements
+    int getSize(); // For Nova to access these elements
     
 private:
     int brightness;
